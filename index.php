@@ -18,6 +18,7 @@ define("API_URL", "https://api.codechef.com");
 define("REDIRECT_URI", "http://" . $_SERVER['HTTP_HOST'] . "/authorize");
 
 session_start();
+header('Access-Control-Allow-Origin: *');
 $app = AppFactory::create();
 
 $app->get('/login', function (Request $request, Response $response) {
