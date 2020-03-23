@@ -97,8 +97,8 @@ $app->get('/refresh', function (Request $request, Response $response) {
         $response->getBody()->write(json_encode($tokenData));
         return $response->withAddedHeader('Content-Type', 'application/json');
     } catch (BadResponseException $exception) {
-        $response->withStatus(400)->getBody()->write("Invalid Refresh Token");
-        return $response;
+        $response->getBody()->write("Invalid Refresh Token");
+        return $response->withStatus(400);
     }
 });
 
