@@ -68,8 +68,7 @@ $app->get('/authorize', function (Request $request, Response $response) {
         return $response->withAddedHeader('Location',
             $_SESSION['client_redirect'] . '?' . http_build_query($tokenData));
     } catch (BadResponseException $exception) {
-        $msg = json_decode($exception->getResponse()->getBody())->result->errors->message;
-        $response->getBody()->write($msg);
+        $response->getBody()->write("An unexpected error occurred while logging in");
         return $response;
     }
 });
@@ -98,8 +97,7 @@ $app->get('/refresh', function (Request $request, Response $response) {
         $response->getBody()->write(json_encode($tokenData));
         return $response->withAddedHeader('Content-Type', 'application/json');
     } catch (BadResponseException $exception) {
-        $msg = json_decode($exception->getResponse()->getBody())->result->errors->message;
-        $response->getBody()->write($msg);
+        $response->withStatus(400)->getBody()->write("Invalid Refresh Token");
         return $response;
     }
 });
