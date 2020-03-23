@@ -11,6 +11,8 @@ use Slim\Psr7\Response;
 
 require __DIR__ . '/vendor/autoload.php';
 require __DIR__ . '/utils.php';
+require __DIR__ . '/database.php';
+require __DIR__ . '/repository.php';
 
 define("CLIENT_ID", getenv("CODECHEF_CLIENT_ID"));
 define("CLIENT_SECRET", getenv("CODECHEF_CLIENT_SECRET"));
@@ -20,6 +22,7 @@ define("REDIRECT_URI", "http://" . $_SERVER['HTTP_HOST'] . "/authorize");
 session_start();
 header('Access-Control-Allow-Origin: *');
 $app = AppFactory::create();
+$repo = new Repository();
 
 $app->get('/login', function (Request $request, Response $response) {
     if (empty(CLIENT_ID) || empty(CLIENT_SECRET)) {
@@ -61,6 +64,7 @@ $app->get('/authorize', function (Request $request, Response $response) {
             ]
         ]);
         $authResponse = json_decode($authResponse->getBody())->result->data;
+        $_SESSION['access_token'] = $authResponse->access_token;
         $tokenData = [
             'access_token' => $authResponse->access_token,
             'refresh_token' => $authResponse->refresh_token
@@ -90,6 +94,7 @@ $app->get('/refresh', function (Request $request, Response $response) {
             ]
         ]);
         $authResponse = json_decode($authResponse->getBody())->result->data;
+        $_SESSION['access_token'] = $authResponse->access_token;
         $tokenData = [
             'access_token' => $authResponse->access_token,
             'refresh_token' => $authResponse->refresh_token
@@ -102,4 +107,23 @@ $app->get('/refresh', function (Request $request, Response $response) {
     }
 });
 
+$app->get('/contests[/{code}]', function (Request $request, Response $response, $args) use ($repo) {
+    try {
+        if (empty($_SESSION['access_token']) && empty($_GET['access_token'])) {
+            die("Unauthorised");
+        }
+        if (empty($args)) {
+            $response->getBody()->write($repo->getContests($_GET['access_token']));
+        } else {
+            $code = $args['code'];
+            $response->getBody()->write($repo->getContestDetails($_GET['access_token'], $code));
+        }
+        return $response->withAddedHeader('Content-Type', 'application/json');
+    } catch (Exception $exception) {
+        $response->getBody()->write($exception->getMessage());
+        return $response->withStatus(401)->withAddedHeader('Content-Type', 'application/json');
+    }
+});
+
 $app->run();
+$conn = null;
