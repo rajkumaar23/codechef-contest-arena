@@ -9,7 +9,8 @@ import API from "../API";
 function NavBarBrand() {
     return <div className="navbar-brand">
         <a className="navbar-item has-text-light has-text-weight-bold" href="../">
-            CodeChef Contest Arena
+            <img src="/logo512.png" alt={"Logo"}/>
+            &nbsp; CodeChef Contest Arena
         </a>
     </div>
 }
@@ -26,7 +27,7 @@ function NavBarMenu(props) {
                         <span className="icon">
                             <i className="fa fa-sign-out-alt"/>
                         </span>
-                        <span>Logout {props.this.state.username ? ', ' + props.this.state.username : ''}</span>
+                        <span>Logout{props.this.state.username ? ', ' + props.this.state.username : ''}</span>
                     </button>
                 </span>
             </div>

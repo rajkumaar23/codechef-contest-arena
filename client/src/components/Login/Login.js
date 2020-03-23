@@ -14,7 +14,7 @@ class Login extends React.Component {
 
     render() {
         if (Utils.isLoggedIn()) {
-            return <Redirect to='/home'/>;
+            return <Redirect to='/contests'/>;
         }
 
         return <div className="hero-body">

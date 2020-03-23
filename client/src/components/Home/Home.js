@@ -12,6 +12,25 @@ export class Home extends React.Component {
         contests: []
     };
 
+    getSuggestions = (menuEl, searchText, mode) => {
+        let suggestions = this.state.contests.filter((el) => {
+
+            return mode === 'code'
+                ? el.code.toLowerCase().includes(searchText)
+                : el.name.toLowerCase().includes(searchText)
+
+
+        });
+        suggestions = suggestions.slice(0, 5);
+        return suggestions.map((el) => {
+            let a = document.createElement('a');
+            a.classList.add('dropdown-item');
+            a.innerHTML = mode === 'code' ? el.code : el.name;
+            a.href = '/contest/' + el.code;
+            return a
+        });
+    };
+
 
     handleInput = (e) => {
         let searchText = e.target.value.toLowerCase();
@@ -19,40 +38,18 @@ export class Home extends React.Component {
         menuEl.innerHTML = null;
         if (this.state.contests.length > 0 && searchText.length > 0) {
             menuEl.innerHTML = '<div class="dropdown-content"></div>';
-            let suggestionsInCode = this.state.contests.filter((el) => {
-                return el.code.toLowerCase().includes(searchText)
+            let suggestionsInCode = this.getSuggestions(menuEl, searchText, 'code');
+            suggestionsInCode.forEach(item => {
+                menuEl.childNodes[0].appendChild(item)
             });
-            suggestionsInCode = suggestionsInCode.slice(0, 5);
-            let suggestionsInCodeEl = suggestionsInCode.map((el) => {
-                let a = document.createElement('a');
-                a.href = '#';
-                a.classList.add('dropdown-item');
-                a.innerHTML = el.code;
-                a.dataset.value = el.code;
-                return a
+            let suggestionsInName = this.getSuggestions(menuEl, searchText, 'name');
+            suggestionsInName.forEach(item => {
+                menuEl.childNodes[0].appendChild(item)
             });
-            suggestionsInCodeEl.forEach(suggEl => {
-                menuEl.childNodes[0].appendChild(suggEl)
-            });
-
-            let suggestionsInName = this.state.contests.filter((el) => {
-                return el.name.toLowerCase().includes(searchText)
-            });
-            suggestionsInName = suggestionsInName.slice(0, 5);
-            console.log(suggestionsInName);
-            let suggestionsInNameEl = suggestionsInName.map((el) => {
-                let a = document.createElement('a');
-                a.href = '#';
-                a.classList.add('dropdown-item');
-                a.innerHTML = el.name;
-                a.dataset.value = el.code;
-                return a
-            });
-            suggestionsInNameEl.forEach(suggEl => {
-                menuEl.childNodes[0].appendChild(suggEl)
-            });
-            if (suggestionsInName.length > 0) {
-                menuEl.style.display = 'block'
+            if ((suggestionsInName.length <= 0) && (suggestionsInCode.length <= 0)) {
+                menuEl.innerHTML = null;
+            } else {
+                menuEl.style.display = 'block';
             }
         }
     };
@@ -85,9 +82,7 @@ export class Home extends React.Component {
                                 </p>
                             </div>
                         </div>
-                        <div className="c-dropdown-menu is-centered" id="dropdown-menu" role="menu">
-
-                        </div>
+                        <div className="c-dropdown-menu is-centered" id="dropdown-menu" role="menu"/>
                     </div>
                 </div>
             </div>

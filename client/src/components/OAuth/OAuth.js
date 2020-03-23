@@ -14,7 +14,7 @@ class OAuth extends React.Component {
         }
         sessionStorage.setItem(Utils.ACCESS_TOKEN, urlParams.get(Utils.ACCESS_TOKEN));
         sessionStorage.setItem(Utils.REFRESH_TOKEN, urlParams.get(Utils.REFRESH_TOKEN));
-        window.location.href = "/home";
+        window.location.href = "/contests";
     }
 }
 
