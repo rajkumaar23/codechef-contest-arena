@@ -12,9 +12,10 @@ class OAuth extends React.Component {
         if (urlParams.get(Utils.ACCESS_TOKEN) == null || urlParams.get(Utils.REFRESH_TOKEN) == null) {
             return <Redirect to='/'/>;
         }
-        sessionStorage.setItem(Utils.ACCESS_TOKEN, urlParams.get(Utils.ACCESS_TOKEN));
-        sessionStorage.setItem(Utils.REFRESH_TOKEN, urlParams.get(Utils.REFRESH_TOKEN));
+        localStorage.setItem(Utils.ACCESS_TOKEN, urlParams.get(Utils.ACCESS_TOKEN));
+        localStorage.setItem(Utils.REFRESH_TOKEN, urlParams.get(Utils.REFRESH_TOKEN));
         window.location.href = "/contests";
+        return null;
     }
 }
 

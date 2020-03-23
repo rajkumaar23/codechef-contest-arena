@@ -9,6 +9,6 @@ export default class Utils {
     static BACKEND_URL = 'https://codechef-arena.herokuapp.com';
 
     static isLoggedIn() {
-        return sessionStorage.getItem(this.ACCESS_TOKEN) && sessionStorage.getItem(this.REFRESH_TOKEN);
+        return localStorage.getItem(this.ACCESS_TOKEN) && localStorage.getItem(this.REFRESH_TOKEN);
     }
 }

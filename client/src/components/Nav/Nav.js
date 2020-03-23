@@ -5,13 +5,14 @@
 import * as React from "react";
 import Utils from "../Utils";
 import API from "../API";
+import {Link} from "react-router-dom";
 
 function NavBarBrand() {
     return <div className="navbar-brand">
-        <a className="navbar-item has-text-light has-text-weight-bold" href="../">
+        <Link className="navbar-item has-text-light has-text-weight-bold" to="/">
             <img src="/logo512.png" alt={"Logo"}/>
             &nbsp; CodeChef Contest Arena
-        </a>
+        </Link>
     </div>
 }
 
@@ -43,7 +44,7 @@ class Nav extends React.Component {
     };
 
     logout = () => {
-        sessionStorage.clear();
+        localStorage.clear();
         this.setState({
             redirect: true
         });
