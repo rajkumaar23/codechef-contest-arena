@@ -23,5 +23,8 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="bulma" level="application" />
     <orderEntry type="library" name="bulmahead.bundle" level="application" />
+    <orderEntry type="library" name="tex-chtml" level="application" />
+    <orderEntry type="library" name="tex-svg" level="application" />
+    <orderEntry type="library" name="tex-mml-chtml" level="application" />
   </component>
 </module>

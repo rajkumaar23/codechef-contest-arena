@@ -97,7 +97,7 @@ class Contest extends React.Component {
         for (let item of this.state.problems) {
             this.rows.push(<tr>
                 <td className="has-text-centered">
-                    <Link to={'/problems/' + item.problemCode}>
+                    <Link to={'/contest/' + this.props.match.params.code + '/problems/' + item.problemCode}>
                         {item.problemCode}
                     </Link>
                 </td>
@@ -110,7 +110,7 @@ class Contest extends React.Component {
                 <td className="has-text-centered">{item.date}</td>
                 <td className="has-text-centered">{item.username}</td>
                 <td className="has-text-centered">
-                    <Link to={'/problems/' + item.problemCode}>
+                    <Link to={'/contest/' + this.props.match.params.code + '/problems/' + item.problemCode}>
                         {item.problemCode}
                     </Link>
                 </td>

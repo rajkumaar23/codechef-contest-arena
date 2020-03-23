@@ -4,7 +4,6 @@
 
 import axios from 'axios';
 import Utils from "./Utils";
-import * as React from "react";
 
 let API = axios.create({
     baseURL: Utils.API_URL,
