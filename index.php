@@ -138,6 +138,16 @@ $app->get('/rankings', function (Request $request, Response $response) use ($rep
     return $response;
 });
 
+$app->get('/problem', function (Request $request, Response $response) use ($repo) {
+    $token = Auth::getAccessToken();
+    $params = $request->getQueryParams();
+    if (empty($params['contestCode']) || empty($params['problemCode'])) {
+        throw new CustomException("Contest Code & Problem Code is mandatory");
+    }
+    $response->getBody()->write($repo->getProblemDetails($token, $params['contestCode'], $params['problemCode']));
+    return $response;
+});
+
 $customErrorHandler = function (
     ServerRequestInterface $request,
     Throwable $exception,

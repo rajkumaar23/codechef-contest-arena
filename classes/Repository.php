@@ -153,10 +153,10 @@ class Repository
                 $submissionsDelStm->execute([$contestCode]);
             }
             $submissionWriteStmt = $this->conn
-                ->prepare("INSERT INTO submissions(id,date, contestCode,problemCode,memory,time,result,username,language,sourceCode,lastUpdated) VALUES (?,?,?,?,?,?,?,?,?,?,?)");
+                ->prepare("INSERT INTO submissions(id,date, contestCode,problemCode,memory,time,result,username,language,lastUpdated) VALUES (?,?,?,?,?,?,?,?,?,?)");
             foreach ($res as $item) {
                 $submissionWriteStmt->execute([
-                    $item->id, $item->date, $item->contestCode, $item->problemCode, $item->memory, $item->time, $item->result, $item->username, $item->language, $item->sourceCode, Carbon::now()
+                    $item->id, $item->date, $item->contestCode, $item->problemCode, $item->memory, $item->time, $item->result, $item->username, $item->language, Carbon::now()
                 ]);
             }
             $this->conn->commit();
@@ -165,12 +165,6 @@ class Repository
         }
         return json_encode($submissions);
     }
-
-    public function getProblemSubmissions($token, $contestCode, $problemCode)
-    {
-
-    }
-
 
     public function getContestRankings($token, $contestCode)
     {
@@ -201,4 +195,65 @@ class Repository
         }
         return json_encode($rankings);
     }
+
+
+    public function getProblemSubmissions($token, $contestCode, $problemCode)
+    {
+        $probSubmissionsStmt = $this->conn->prepare("SELECT * FROM problemSubmissions WHERE contestCode = ? AND problemCode = ? ORDER BY date DESC");
+        $probSubmissionsStmt->execute([$contestCode, $problemCode]);
+        $submissions = $probSubmissionsStmt->fetchAll(PDO::FETCH_OBJ);
+        if (empty($submissions) || Utils::shouldUpdateCache($submissions[0]->lastUpdated)) {
+            $queryData = ['limit' => 20, 'result' => 'AC', 'contestCode' => $contestCode, 'problemCode' => $problemCode];
+            $res = json_decode($this->client->get("/submissions/?" . http_build_query($queryData), [
+                'headers' => [
+                    'Authorization' => 'Bearer ' . $token
+                ]
+            ])->getBody())->result->data->content;
+            $this->conn->beginTransaction();
+            if (!empty($submissions) && Utils::shouldUpdateCache($submissions[0]->lastUpdated)) {
+                $delStmt = $this->conn->prepare("DELETE FROM problemSubmissions WHERE contestCode = ? AND problemCode = ?");
+                $delStmt->execute([$contestCode, $problemCode]);
+            }
+            $writeStmt = $this->conn
+                ->prepare("INSERT INTO problemSubmissions(username,time,memory,language,problemCode,contestCode,date,lastUpdated) VALUES (?,?,?,?,?,?,?,?)");
+            foreach ($res as $item) {
+                $writeStmt->execute([
+                    $item->username, $item->time, $item->memory, $item->language, $problemCode, $contestCode, $item->date, Carbon::now()
+                ]);
+            }
+            $this->conn->commit();
+            $probSubmissionsStmt->execute([$contestCode, $problemCode]);
+            $submissions = $probSubmissionsStmt->fetchAll(PDO::FETCH_OBJ);
+        }
+        return json_encode($submissions);
+    }
+
+    public function getProblemDetails($token, $contestCode, $problemCode)
+    {
+        $problemStmt = $this->conn->prepare("SELECT * FROM problemDetails WHERE contestCode = ? AND problemCode = ?");
+        $problemStmt->execute([$contestCode, $problemCode]);
+        $problem = $problemStmt->fetch(PDO::FETCH_OBJ);
+        if (empty($problem) || Utils::shouldUpdateCache($problem->lastUpdated)) {
+            $res = json_decode($this->client->get("/contests/" . $contestCode . '/problems/' . $problemCode, [
+                'headers' => [
+                    'Authorization' => 'Bearer ' . $token
+                ]
+            ])->getBody())->result->data->content;
+            $this->conn->beginTransaction();
+            if (!empty($problem) && (Utils::shouldUpdateCache($problem->lastUpdated))) {
+                $delStmt = $this->conn->prepare("DELETE FROM problemDetails WHERE contestCode = ? AND problemCode = ?");
+                $delStmt->execute([$contestCode, $problemCode]);
+            }
+            $item = $res;
+            $problemsWriteStmt = $this->conn
+                ->prepare("INSERT INTO problemDetails(problemCode,contestCode,body,name,author,lastUpdated) VALUES (?,?,?,?,?,?)");
+            $problemsWriteStmt->execute([$problemCode, $contestCode, $item->body, $item->problemName, $item->author, Carbon::now()]);
+            $this->conn->commit();
+            $problemStmt->execute([$contestCode, $problemCode]);
+            $problem = $problemStmt->fetch(PDO::FETCH_OBJ);
+        }
+        return json_encode($problem);
+    }
+
+
 }

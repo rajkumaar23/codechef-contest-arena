@@ -4,6 +4,8 @@
 
 import * as React from "react";
 import API from "../API";
+import DataTable from "react-data-table-component";
+import {Link} from "react-router-dom";
 
 class Problem extends React.Component {
 
@@ -13,35 +15,47 @@ class Problem extends React.Component {
         name: '',
         successfulSubmissions: []
     };
+    recentsColumns = [
+        {name: 'Time', selector: 'time', center: true},
+        {
+            name: 'Username', selector: 'user', center: true, wrap: true, button: true,
+            cell: row => <a className="has-text-light"
+                            href={"https://codechef.com/users/" + row.user} target="_blank"
+                            rel="noopener noreferrer"><u>{row.user}</u></a>
+        },
+        {name: 'Memory', selector: 'mem', center: true},
+        {name: 'Language', selector: 'lang', center: true},
+    ];
 
     componentDidMount() {
-        API.get('/contests/' + this.props.match.params.code + '/problems/' + this.props.match.params.problemCode).then(res => {
-            let data = res.data.result.data.content;
+        API.get('/problem?contestCode=' + this.props.match.params.code + '&problemCode=' + this.props.match.params.problemCode).then(res => {
+            let data = res.data;
             this.setState({
                 body: data.body,
-                name: data.problemName
+                name: data.name,
+                author: data.author
             });
         });
 
-        API.get('/submissions/?result=AC&contestCode='
-            + this.props.match.params.code + '&problemCode=' + this.props.match.params.problemCode).then(res => {
-            this.setState({
-                successfulSubmissions: res.data.result.data.content
+        API.get('/submissions?contestCode=' + this.props.match.params.code + '&problemCode=' + this.props.match.params.problemCode)
+            .then(res => {
+                this.setState({
+                    successfulSubmissions: res.data
+                })
             })
-        })
     }
 
     init = () => {
         if (this.state.successfulSubmissions) {
             this.recents = [];
         }
-        for (let item of this.state.successfulSubmissions.slice(0, 10)) {
-            this.recents.push(<tr>
-                <td className="has-text-centered">{item.username}</td>
-                <td className="has-text-centered">{item.time}</td>
-                <td className="has-text-centered">{Number((item.memory / 1024).toFixed(1)) + 'MB'}</td>
-                <td className="has-text-centered">{item.language}</td>
-            </tr>)
+        for (let item of this.state.successfulSubmissions) {
+            this.recents.push({
+                user: item.username,
+                time: item.time,
+                mem: Number((item.memory / 1024).toFixed(1)) + 'MB',
+                lang: item.language
+            });
         }
     };
 
@@ -53,9 +67,22 @@ class Problem extends React.Component {
         this.init();
         return <div className="hero-body">
             <div className="container">
+                <p className="subtitle is-5 has-text-light"><Link
+                    to={'/contest/' + this.props.match.params.code}>&#x25c0; {this.props.match.params.code}</Link>
+                </p>
                 <div className="columns">
                     <div className="column is-three-fifths problem has-background-white has-text-dark">
-                        <p className="title is-2 has-text-dark"><u>{this.state.name}</u></p>
+                        <p className="has-text-dark">
+                            <u className="title is-3 has-text-dark">{this.state.name}</u>
+                            &nbsp; (author :&nbsp;
+                            <a className="has-text-info"
+                               href={"https://codechef.com/users/" + this.state.author}
+                               target="_blank"
+                               rel="noopener noreferrer">{this.state.author}
+                            </a>
+                            )
+                        </p>
+                        <br/>
                         <div id="problem-body" dangerouslySetInnerHTML={{__html: this.state.body}}/>
                     </div>
                     <div className="column is-two-fifths" style={{"marginLeft": "20px"}}>
@@ -69,19 +96,13 @@ class Problem extends React.Component {
                         </form>
                         <br/>
                         <p className="title is-6">Successful Submissions</p>
-                        <div className="table-container table__wrapper">
-                            <table className="table">
-                                <thead>
-                                <tr>
-                                    <td className="has-text-centered has-text-weight-bold has-text-info">Username</td>
-                                    <td className="has-text-centered has-text-weight-bold">Time</td>
-                                    <td className="has-text-centered has-text-weight-bold">Memory</td>
-                                    <td className="has-text-centered has-text-weight-bold">Lang</td>
-                                </tr>
-                                </thead>
-                                <tbody>{this.recents}</tbody>
-                            </table>
-                        </div>
+                        <DataTable
+                            noHeader={true}
+                            columns={this.recentsColumns}
+                            data={this.recents}
+                            pagination={true}
+                            theme={'dark'}
+                        />
                     </div>
                 </div>
             </div>
