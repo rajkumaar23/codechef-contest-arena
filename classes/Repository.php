@@ -183,7 +183,6 @@ class Repository
                     'Authorization' => 'Bearer ' . $token
                 ]
             ])->getBody())->result->data->content;
-            var_dump($res);
             $this->conn->beginTransaction();
             if (!empty($rankings) && Utils::shouldUpdateCache($rankings[0]->lastUpdated)) {
                 $rankingsDelStmt = $this->conn->prepare("DELETE FROM rankings WHERE contestCode = ?");
