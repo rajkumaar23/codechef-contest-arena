@@ -10,41 +10,12 @@
     <link href="https://cdn.jsdelivr.net/npm/bulma@0.8.0/css/bulma.min.css" rel="stylesheet">
     <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
     <meta content="width=device-width, initial-scale=1" name="viewport"/>
-    <script type="text/javascript">
-        (function () {
-            var script = document.createElement("script");
-            script.type = "text/javascript";
-            script.src = "https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js";   // use the location of your MathJax
-
-            var config = 'MathJax.Hub.Config({' +
-                'extensions: ["tex2jax.js"],' +
-                'jax: ["input/TeX","output/HTML-CSS"]' +
-                '});' +
-                'MathJax.Hub.Startup.onload();';
-
-            if (window.opera) {
-                script.innerHTML = config
-            } else {
-                script.text = config
-            }
-
-            script.addEventListener('load', function () {
-                MathJax.Hub.Queue(["Typeset", MathJax.Hub]);
-            });
-
-            document.getElementsByTagName("head")[0].appendChild(script);
-        })();
-    </script>
     <meta content="#000000" name="theme-color"/>
     <meta
             content="CodeChef Contest Arena - Rajkumar"
             name="description"
     />
     <link href="%PUBLIC_URL%/logo192.png" rel="apple-touch-icon"/>
-    <!--
-      manifest.json provides metadata used when your web app is installed on a
-      user's mobile device or desktop. See https://developers.google.com/web/fundamentals/web-app-manifest/
-    -->
     <link href="%PUBLIC_URL%/manifest.json" rel="manifest"/>
     <title>CodeChef Contest Arena</title>
 </head>

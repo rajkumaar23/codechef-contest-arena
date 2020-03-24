@@ -3,6 +3,10 @@
  * Copyright (c) 2020. RAJKUMAR
  */
 
+namespace Classes;
+
+use PDO;
+
 class Database
 {
     public $connection;
@@ -19,13 +23,9 @@ class Database
 
     private function connect()
     {
-        try {
-            $conn = new PDO("mysql:host=$this->DB_SERVER;dbname=$this->DB_NAME", $this->DB_USER, $this->DB_PASS);
-            $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-            return $conn;
-        } catch (PDOException $e) {
-            die("Connection failed: " . $e->getMessage());
-        }
+        $conn = new PDO("mysql:host=$this->DB_SERVER;dbname=$this->DB_NAME", $this->DB_USER, $this->DB_PASS);
+        $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        return $conn;
     }
 
     public function getConnection()

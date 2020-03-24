@@ -57,7 +57,7 @@ export class Home extends React.Component {
     componentDidMount() {
         API.get('/contests').then(res => {
             this.setState({
-                contests: res.data.result.data.content.contestList
+                contests: res.data
             });
         });
     }

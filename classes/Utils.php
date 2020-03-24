@@ -3,8 +3,16 @@
  * Copyright (c) 2020. RAJKUMAR
  */
 
+
+namespace Classes;
+
+use Carbon\Carbon;
+use Exception;
+use RangeException;
+
 class Utils
 {
+
     /**
      * Generate a random string, using a cryptographically secure
      * pseudorandom number generator (random_int)
@@ -29,5 +37,14 @@ class Utils
             $pieces [] = $keyspace[random_int(0, $max)];
         }
         return implode('', $pieces);
+    }
+
+    /**
+     * @param Carbon $dateTime
+     * @return bool
+     */
+    public static function shouldUpdateCache($dateTime)
+    {
+        return empty($dateTime) || (Carbon::parse($dateTime)->diffInHours(null) > CACHE_INTERVAL);
     }
 }

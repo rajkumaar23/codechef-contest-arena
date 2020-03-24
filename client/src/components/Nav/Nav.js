@@ -4,7 +4,6 @@
 
 import * as React from "react";
 import Utils from "../Utils";
-import API from "../API";
 import {Link} from "react-router-dom";
 
 function NavBarBrand() {
@@ -51,14 +50,14 @@ class Nav extends React.Component {
     };
 
     componentDidMount() {
-        if (Utils.isLoggedIn()) {
-            API.get(Utils.API_URL + '/users/me')
-                .then(res => {
-                    this.setState({
-                        username: res.data.result.data.content.username
-                    });
-                })
-        }
+        // if (Utils.isLoggedIn()) {
+        //     API.get(Utils.API_URL + '/users/me')
+        //         .then(res => {
+        //             this.setState({
+        //                 username: res.data.result.data.content.username
+        //             });
+        //         })
+        // }
     }
 
     render() {

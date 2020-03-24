@@ -5,8 +5,6 @@
 import * as React from "react";
 import API from "../API";
 
-const ReactMarkdown = require('react-markdown/with-html');
-
 class Problem extends React.Component {
 
     recents = [];
@@ -47,19 +45,18 @@ class Problem extends React.Component {
         }
     };
 
+    componentDidUpdate(prevProps, prevState, snapshot) {
+        // window.MathJax.Hub.Queue(['Typeset', window.MathJax.Hub, document.getElementById('problem-body')])
+    }
+
     render() {
         this.init();
         return <div className="hero-body">
             <div className="container">
                 <div className="columns">
-                    <div className="column is-three-fifths problem has-background-white">
+                    <div className="column is-three-fifths problem has-background-white has-text-dark">
                         <p className="title is-2 has-text-dark"><u>{this.state.name}</u></p>
-                        <ReactMarkdown className="has-text-dark"
-                                       source={this.state.body}
-                                       escapeHtml={false}
-                        />
-                        {/*<div dangerouslySetInnerHTML={{__html:this.state.body}}>*/}
-                        {/*</div>*/}
+                        <div id="problem-body" dangerouslySetInnerHTML={{__html: this.state.body}}/>
                     </div>
                     <div className="column is-two-fifths" style={{"marginLeft": "20px"}}>
                         <form action={this.backendURL + '/login'}>
@@ -76,10 +73,10 @@ class Problem extends React.Component {
                             <table className="table">
                                 <thead>
                                 <tr>
-                                    <td className="has-text-centered">Username</td>
-                                    <td className="has-text-centered">Time</td>
-                                    <td className="has-text-centered">Memory</td>
-                                    <td className="has-text-centered">Lang</td>
+                                    <td className="has-text-centered has-text-weight-bold has-text-info">Username</td>
+                                    <td className="has-text-centered has-text-weight-bold">Time</td>
+                                    <td className="has-text-centered has-text-weight-bold">Memory</td>
+                                    <td className="has-text-centered has-text-weight-bold">Lang</td>
                                 </tr>
                                 </thead>
                                 <tbody>{this.recents}</tbody>

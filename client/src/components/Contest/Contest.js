@@ -4,8 +4,9 @@
 
 import * as React from "react";
 import API from "../API";
-import {Link} from "react-router-dom";
 import './Contest.css';
+import Swal from 'sweetalert2'
+import DataTable from "react-data-table-component";
 
 class Contest extends React.Component {
 
@@ -13,6 +14,7 @@ class Contest extends React.Component {
         problems: [],
         banner: '',
         submissions: [],
+        rankings: [],
         endDate: '',
         currentTime: '',
         days: '',
@@ -23,6 +25,46 @@ class Contest extends React.Component {
 
     rows = [];
     recents = [];
+    rankings = [];
+    recentsColumns = [
+        {name: 'Date', selector: 'date', center: true, wrap: true, style: {fontSize: '10px'}},
+        {
+            name: 'Problem Code', selector: 'code', center: true, button: true,
+            cell: row => <a className="has-text-light"
+                            href={"/contest/" + this.props.match.params.code + "/problems/" + row.code}><u>{row.code}</u></a>
+        },
+        {
+            name: 'Username', selector: 'user', center: true, wrap: true, button: true,
+            cell: row => <a className="has-text-light"
+                            href={"https://codechef.com/users/" + row.user} target="_blank"
+                            rel="noopener noreferrer"><u>{row.user}</u></a>
+        },
+        {name: 'Result', selector: 'res', center: true},
+    ];
+    rankColumns = [
+        {name: 'Rank', selector: 'rank', center: true, grow: 0, sortable: true},
+        {
+            name: 'Country', selector: 'country', center: true, grow: 0,
+            cell: row => <img src={"https://www.countryflags.io/" + row.country + "/flat/32.png"}/>
+        },
+        {
+            name: 'Username', selector: 'user', center: true, wrap: true, button: true, sortable: true,
+            cell: row => <a className="has-text-light"
+                            href={"https://codechef.com/users/" + row.user} target="_blank"
+                            rel="noopener noreferrer"><u>{row.user}</u></a>
+        },
+        {name: 'Institution', selector: 'institution', center: true, wrap: true, sortable: true},
+        {name: 'Score', selector: 'score', center: true},
+    ];
+    problemColumns = [
+        {
+            name: 'Problem Code', selector: 'code', center: true, button: true, width: '200px',
+            cell: row => <a className="has-text-light"
+                            href={"/contest/" + this.props.match.params.code + "/problems/" + row.code}><u>{row.code}</u></a>
+        },
+        {name: 'Successful Submissions', selector: 'successfulSubmissions', center: true},
+        {name: 'Accuracy', selector: 'accuracy', center: true},
+    ];
 
     constructor(props) {
         super(props);
@@ -47,7 +89,6 @@ class Contest extends React.Component {
         const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
         const seconds = Math.floor((distance % (1000 * 60)) / 1000);
 
-        // Display the result in the element with id="demo"
         this.setState({
             days,
             hours,
@@ -59,10 +100,10 @@ class Contest extends React.Component {
         if (distance < 0) {
             clearInterval(this.state.intervalId);
             this.setState({
-                days : 0,
-                hours : 0,
-                minutes : 0,
-                seconds : 0
+                days: 0,
+                hours: 0,
+                minutes: 0,
+                seconds: 0
             });
         }
     };
@@ -70,52 +111,66 @@ class Contest extends React.Component {
     getDetails = () => {
         API.get('/contests/' + this.props.match.params.code).then(res => {
             this.setState({
-                problems: res.data.result.data.content.problemsList,
-                banner: res.data.result.data.content.bannerFile,
-                endDate: res.data.result.data.content.endDate,
-                currentTime: res.data.result.data.content.currentTime,
+                problems: res.data.problemsList,
+                banner: res.data.contest.banner,
+                endDate: res.data.contest.endDate,
             })
+        }, err => {
+            Swal.fire('Oops...', err.response.data.error, 'error').then(() => {
+                window.location.href = "/contests";
+            });
+
+
         });
-        API.get('/submissions/?contestCode=' + this.props.match.params.code).then(res => {
-            try {
-                this.setState({
-                    submissions: res.data.result.data.content
-                });
-            } catch (e) {
-                console.error(e);
-            }
+        API.get('/submissions?contestCode=' + this.props.match.params.code).then(res => {
+            this.setState({
+                submissions: res.data
+            });
+        });
+
+        API.get('/rankings?contestCode=' + this.props.match.params.code).then(res => {
+            this.setState({
+                rankings: res.data
+            });
         });
     };
 
     init = () => {
-        if(this.state.problems){
+        if (this.state.problems) {
             this.rows = [];
         }
-        if(this.state.submissions){
+        if (this.state.submissions) {
             this.recents = [];
         }
-        for (let item of this.state.problems) {
-            this.rows.push(<tr>
-                <td className="has-text-centered">
-                    <Link to={'/contest/' + this.props.match.params.code + '/problems/' + item.problemCode}>
-                        {item.problemCode}
-                    </Link>
-                </td>
-                <td className="has-text-centered">{item.successfulSubmissions}</td>
-                <td className="has-text-centered">{Number((item.accuracy).toFixed(2))}</td>
-            </tr>)
+        if (this.state.rankings) {
+            this.rankings = [];
         }
-        for (let item of this.state.submissions.slice(0, 5)) {
-            this.recents.push(<tr>
-                <td className="has-text-centered">{item.date}</td>
-                <td className="has-text-centered">{item.username}</td>
-                <td className="has-text-centered">
-                    <Link to={'/contest/' + this.props.match.params.code + '/problems/' + item.problemCode}>
-                        {item.problemCode}
-                    </Link>
-                </td>
-                <td className="has-text-centered">{item.result}</td>
-            </tr>)
+        for (let item of this.state.problems) {
+            this.rows.push(
+                {
+                    code: item.code,
+                    successfulSubmissions: item.successfulSubmissions,
+                    accuracy: Number((item.accuracy)).toFixed(2)
+                });
+        }
+        for (let item of this.state.submissions) {
+            this.recents.push(
+                {
+                    date: item.date,
+                    code: item.problemCode,
+                    user: item.username,
+                    res: item.result
+                })
+        }
+        for (let item of this.state.rankings) {
+            this.rankings.push(
+                {
+                    rank: parseInt(item.rank),
+                    country: item.countryCode,
+                    user: item.username,
+                    institution: item.institution,
+                    score: Number((item.score)).toFixed(1)
+                })
         }
     };
 
@@ -135,20 +190,15 @@ class Contest extends React.Component {
             <div className="container has-text-centered">
                 <div className="columns">
                     <div className="column is-three-fifths">
-                        <img className="contest-banner" src={this.state.banner} alt="Contest Banner"/>
+                        <img className="contest-banner" src={this.state.banner} alt="Contest Banner"
+                             style={{marginBottom: "20px"}}/>
                         <p className="title is-3">Problems in {this.props.match.params.code}</p>
-                        <div className="table-container table__wrapper">
-                            <table className="table is-fullwidth">
-                                <thead>
-                                <tr>
-                                    <th className="has-text-centered">Problem Code</th>
-                                    <th className="has-text-centered">Successful Submissions</th>
-                                    <th className="has-text-centered">Accuracy</th>
-                                </tr>
-                                </thead>
-                                <tbody>{this.rows}</tbody>
-                            </table>
-                        </div>
+                        <DataTable
+                            noHeader={true}
+                            columns={this.problemColumns}
+                            data={this.rows}
+                            theme={'dark'}
+                        />
                     </div>
                     <div className="column is-two-fifths">
                         <p className="title is-5"><u>Contest Ends In</u></p>
@@ -167,21 +217,28 @@ class Contest extends React.Component {
                             </div>
                         </div>
                         <br/>
+                        <a className="button is-info is-rounded" href="#rankList">Show Ranklist</a>
+                        <br/>
+                        <br/>
                         <p className="title is-5">Recent activity</p>
-                        <div className="table-container table__wrapper">
-                            <table className="table is-fullwidth">
-                                <thead>
-                                <tr>
-                                    <th className="has-text-centered">Date</th>
-                                    <th className="has-text-centered">Username</th>
-                                    <th className="has-text-centered">Problem Code</th>
-                                    <th className="has-text-centered">Result</th>
-                                </tr>
-                                </thead>
-                                <tbody>{this.recents}</tbody>
-                            </table>
-                        </div>
+                        <DataTable
+                            noHeader={true}
+                            columns={this.recentsColumns}
+                            data={this.recents}
+                            pagination={true}
+                            theme={'dark'}
+                        />
                     </div>
+                </div>
+                <div id="rankList">
+                    <p className="title is-3 has-text-warning">Ranklist</p>
+                    <DataTable
+                        noHeader={true}
+                        columns={this.rankColumns}
+                        data={this.rankings}
+                        pagination={true}
+                        theme={'dark'}
+                    />
                 </div>
             </div>
         </div>;

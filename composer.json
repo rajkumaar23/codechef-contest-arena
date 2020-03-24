@@ -6,6 +6,9 @@
     "ext-mbstring": "^7.4",
     "ext-json": "*",
     "ext-mysqli": "*",
-    "ext-pdo": "*"
+    "ext-pdo": "*",
+    "nesbot/carbon": "^2.31",
+    "firebase/php-jwt": "^5.1",
+    "ext-apache": "*"
   }
 }
