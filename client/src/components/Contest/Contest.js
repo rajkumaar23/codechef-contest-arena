@@ -230,7 +230,7 @@ class Contest extends React.Component {
                         />
                     </div>
                 </div>
-                <div id="rankList">
+                <div id="rankList" className="has-text-centered">
                     <p className="title is-3 has-text-warning">Ranklist</p>
                     <DataTable
                         noHeader={true}
