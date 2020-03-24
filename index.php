@@ -16,11 +16,11 @@ use Slim\Factory\AppFactory;
 use Slim\Psr7\Request;
 use Slim\Psr7\Response;
 
-require '../vendor/autoload.php';
-require '../classes/autoload.php';
-require '../exceptions/CustomExceptions.php';
+require 'vendor/autoload.php';
+require 'classes/autoload.php';
+require 'exceptions/CustomExceptions.php';
 
-$dotenv = Dotenv\Dotenv::createImmutable('../');
+$dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
 $dotenv->load();
 
 define("CLIENT_ID", getenv("CODECHEF_CLIENT_ID"));
