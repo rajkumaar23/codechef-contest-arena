@@ -20,9 +20,6 @@ require 'vendor/autoload.php';
 require 'classes/autoload.php';
 require 'exceptions/CustomExceptions.php';
 
-$dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
-$dotenv->load();
-
 define("CLIENT_ID", getenv("CODECHEF_CLIENT_ID"));
 define("CLIENT_SECRET", getenv("CODECHEF_CLIENT_SECRET"));
 define("API_URL", "https://api.codechef.com");
