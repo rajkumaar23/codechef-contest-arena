@@ -45,7 +45,8 @@ class Contest extends React.Component {
         {name: 'Rank', selector: 'rank', center: true, grow: 0, sortable: true},
         {
             name: 'Country', selector: 'country', center: true, grow: 0,
-            cell: row => <img src={"https://www.countryflags.io/" + row.country + "/flat/32.png"}/>
+            cell: row => <img alt={row.country} src={"https://www.countryflags.io/" + row.country + "/flat/32.png"}
+                              title={row.country}/>
         },
         {
             name: 'Username', selector: 'user', center: true, wrap: true, button: true, sortable: true,

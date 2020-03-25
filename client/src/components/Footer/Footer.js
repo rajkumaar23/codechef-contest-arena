@@ -10,7 +10,7 @@ class Footer extends React.Component {
             <footer className="footer has-background-dark">
                 <div className="content has-text-centered">
                     <a className="has-text-light" href="https://rajkumaar.co.in">
-                        <span><i className="far fa-copyright"/> 2020 | Rajkumar S</span>
+                        <span><i className="far fa-copyright"/> {new Date().getFullYear()} | Rajkumar S</span>
                     </a>
                 </div>
             </footer>

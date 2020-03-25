@@ -13,7 +13,7 @@
     font-style: normal;
 }
 
-* {
+body:not(#ace-editor) {
     font-family: inter, sans-serif !important;
 }
 
@@ -28,3 +28,6 @@ code {
     monospace;
 }
 
+html {
+    scroll-behavior: smooth;
+}

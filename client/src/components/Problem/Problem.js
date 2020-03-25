@@ -86,14 +86,9 @@ class Problem extends React.Component {
                         <div id="problem-body" dangerouslySetInnerHTML={{__html: this.state.body}}/>
                     </div>
                     <div className="column is-two-fifths" style={{"marginLeft": "20px"}}>
-                        <form action={this.backendURL + '/login'}>
-                            <input name="redirect"
-                                   value={this.redirectURL}
-                                   hidden readOnly/>
-                            <button className="button is-info is-rounded"
-                                    type="submit">Submit solution
-                            </button>
-                        </form>
+                        <Link className="button is-info is-rounded" style={{marginBottom: "20px"}}
+                              to={"/contest/" + this.props.match.params.code + "/problems/" + this.props.match.params.problemCode + "/submit"}>Submit
+                            solution</Link>
                         <br/>
                         <p className="title is-6">Successful Submissions</p>
                         <DataTable
