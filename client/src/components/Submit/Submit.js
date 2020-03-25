@@ -20,6 +20,7 @@ require('../../../node_modules/codemirror/lib/codemirror.css');
  * @return {null}
  */
 function Output(props) {
+    console.log(props.this.state.output, props.this.state.cmpinfo, props.this.state.stderr);
     if (props.this.state.output) {
         return (
             <div className="content" style={{marginTop: '50px'}}>
