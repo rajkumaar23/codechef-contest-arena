@@ -287,36 +287,7 @@ class Repository
             'headers' => [
                 'Authorization' => 'Bearer ' . $token
             ]
-        ])->getBody())->result;
+        ])->getBody())->result->data;
         return json_encode($res);
     }
-
-    public function getLanguages($token)
-    {
-        $query = $this->conn->prepare("SELECT * FROM languages");
-        $query->execute();
-        $languages = $query->fetchAll(PDO::FETCH_OBJ);
-        if (empty($languages) || Utils::shouldUpdateCache($languages[0]->lastUpdated)) {
-            $res = json_decode($this->client->get("/language?limit=100", [
-                'headers' => [
-                    'Authorization' => 'Bearer ' . $token
-                ]
-            ])->getBody())->result->data->content;
-            $this->conn->beginTransaction();
-            if (!empty($languages) && (Utils::shouldUpdateCache($languages[0]->lastUpdated))) {
-                $this->conn->exec("DELETE * FROM languages");
-            }
-            $writeStmt = $this->conn
-                ->prepare("INSERT INTO languages(name, lastUpdated) VALUES (?,?)");
-            foreach ($res as $item) {
-                $writeStmt->execute([$item->shortName, Carbon::now()]);
-            }
-            $this->conn->commit();
-            $query->execute();
-            $languages = $query->fetch(PDO::FETCH_OBJ);
-        }
-        return json_encode($languages);
-    }
-
-
 }

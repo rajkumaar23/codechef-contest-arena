@@ -148,13 +148,6 @@ $app->get('/problem', function (Request $request, Response $response) use ($repo
     return $response;
 });
 
-
-$app->get('/languages', function (Request $request, Response $response) use ($repo) {
-    $token = Auth::getAccessToken();
-    $response->getBody()->write($repo->getLanguages($token));
-    return $response;
-});
-
 $app->post('/ide/run', function (Request $request, Response $response) use ($repo) {
     $token = Auth::getAccessToken();
     $body = json_decode($request->getBody()->getContents(), true);
