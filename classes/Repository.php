@@ -8,6 +8,7 @@ namespace Classes;
 use Carbon\Carbon;
 use Exceptions\CustomException;
 use GuzzleHttp\Client;
+use GuzzleHttp\Middleware;
 use PDO;
 
 
@@ -253,6 +254,68 @@ class Repository
             $problem = $problemStmt->fetch(PDO::FETCH_OBJ);
         }
         return json_encode($problem);
+    }
+
+    public function makeSubmission($token, $code, $input, $lang)
+    {
+        $clientHandler = $this->client->getConfig('handler');
+        // Create a middleware that echoes parts of the request.
+        $tapMiddleware = Middleware::tap(function ($request) {
+            echo $request->getHeaderLine('Content-Type');
+            // application/json
+            echo $request->getBody();
+            // {"foo":"bar"}
+        });
+
+        $res = json_decode($this->client->request("post", "/ide/run", [
+            'headers' => [
+                'Authorization' => 'Bearer ' . $token,
+                'Content-Type' => 'application/json'
+            ],
+            'json' => [
+                'sourceCode' => $code,
+                'language' => $lang,
+                'input' => $input
+            ]
+        ])->getBody())->result->data;
+        return json_encode($res);
+    }
+
+    public function getSubmissionDetails($token, $link)
+    {
+        $res = json_decode($this->client->get("/ide/status?link=" . $link, [
+            'headers' => [
+                'Authorization' => 'Bearer ' . $token
+            ]
+        ])->getBody())->result;
+        return json_encode($res);
+    }
+
+    public function getLanguages($token)
+    {
+        $query = $this->conn->prepare("SELECT * FROM languages");
+        $query->execute();
+        $languages = $query->fetchAll(PDO::FETCH_OBJ);
+        if (empty($languages) || Utils::shouldUpdateCache($languages[0]->lastUpdated)) {
+            $res = json_decode($this->client->get("/language?limit=100", [
+                'headers' => [
+                    'Authorization' => 'Bearer ' . $token
+                ]
+            ])->getBody())->result->data->content;
+            $this->conn->beginTransaction();
+            if (!empty($languages) && (Utils::shouldUpdateCache($languages[0]->lastUpdated))) {
+                $this->conn->exec("DELETE * FROM languages");
+            }
+            $writeStmt = $this->conn
+                ->prepare("INSERT INTO languages(name, lastUpdated) VALUES (?,?)");
+            foreach ($res as $item) {
+                $writeStmt->execute([$item->shortName, Carbon::now()]);
+            }
+            $this->conn->commit();
+            $query->execute();
+            $languages = $query->fetch(PDO::FETCH_OBJ);
+        }
+        return json_encode($languages);
     }
 
 

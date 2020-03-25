@@ -148,6 +148,27 @@ $app->get('/problem', function (Request $request, Response $response) use ($repo
     return $response;
 });
 
+
+$app->get('/languages', function (Request $request, Response $response) use ($repo) {
+    $token = Auth::getAccessToken();
+    $response->getBody()->write($repo->getLanguages($token));
+    return $response;
+});
+
+$app->post('/ide/run', function (Request $request, Response $response) use ($repo) {
+    $token = Auth::getAccessToken();
+    $body = json_decode($request->getBody()->getContents(), true);
+    $response->getBody()->write($repo->makeSubmission($token, $body['code'], $body['input'], $body['lang']));
+    return $response;
+});
+
+$app->get('/ide/status', function (Request $request, Response $response) use ($repo) {
+    $token = Auth::getAccessToken();
+    $params = $request->getQueryParams();
+    $response->getBody()->write($repo->getSubmissionDetails($token, $params['link']));
+    return $response;
+});
+
 $customErrorHandler = function (
     ServerRequestInterface $request,
     Throwable $exception,
