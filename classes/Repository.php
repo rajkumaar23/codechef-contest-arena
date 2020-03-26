@@ -100,7 +100,7 @@ class Repository
                 $problems = $problemsStmt->fetchAll(PDO::FETCH_OBJ);
             }
             if (!empty($contest) && Utils::shouldUpdateCache($contest->lastUpdated)) {
-                $contestDelStmt = $this->conn->prepare("DELETE FROM contests WHERE contestCode = ?");
+                $contestDelStmt = $this->conn->prepare("DELETE FROM contests WHERE code = ?");
                 $contestDelStmt->execute([$contestCode]);
                 $contestsStmt->execute();
                 $contest = $contestsStmt->fetch(PDO::FETCH_OBJ);

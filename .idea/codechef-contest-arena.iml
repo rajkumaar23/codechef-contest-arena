@@ -31,5 +31,6 @@
     <orderEntry type="library" name="tex-chtml" level="application" />
     <orderEntry type="library" name="tex-svg" level="application" />
     <orderEntry type="library" name="tex-mml-chtml" level="application" />
+    <orderEntry type="library" name="katex" level="application" />
   </component>
 </module>

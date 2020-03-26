@@ -81,35 +81,39 @@ export default class Submit extends React.Component {
     }
 
     runCode() {
-        this.setState({
-            isLoading: true,
-            output: '',
-            stderr: '',
-            cmpinfo: '',
-        });
-        API.post('/ide/run', {
-            code: this.state.code,
-            lang: Utils.codeChefLangMap().get(this.state.modeFull),
-            input: this.state.input
-        }).then(res => {
+        if (this.state.code) {
             this.setState({
-                link: res.data.link
+                isLoading: true,
+                output: '',
+                stderr: '',
+                cmpinfo: '',
             });
-            setTimeout(() => {
-                API.get('/ide/status?link=' + res.data.link).then(res => {
-                    this.setState({
-                        output: res.data.output,
-                        stderr: res.data.stderr,
-                        cmpinfo: res.data.cmpinfo,
-                        isLoading: false
-                    })
-                }, err => {
-                    this.setState({
-                        isLoading: false
-                    });
+            API.post('/ide/run', {
+                code: this.state.code,
+                lang: Utils.codeChefLangMap().get(this.state.modeFull),
+                input: this.state.input
+            }).then(res => {
+                this.setState({
+                    link: res.data.link
                 });
-            }, 2000);
-        });
+                setTimeout(() => {
+                    API.get('/ide/status?link=' + res.data.link).then(res => {
+                        this.setState({
+                            output: res.data.output,
+                            stderr: res.data.stderr,
+                            cmpinfo: res.data.cmpinfo,
+                            isLoading: false
+                        })
+                    }, err => {
+                        this.setState({
+                            isLoading: false
+                        });
+                    });
+                }, 2000);
+            });
+        } else {
+            Swal.fire('Error', 'Your code is empty :(', 'error');
+        }
     };
 
 

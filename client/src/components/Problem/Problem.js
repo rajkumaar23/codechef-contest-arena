@@ -6,6 +6,26 @@ import * as React from "react";
 import API from "../API";
 import DataTable from "react-data-table-component";
 import {Link} from "react-router-dom";
+import showdownKatex from "showdown-katex";
+
+const showdown = require('showdown');
+const converter = new showdown.Converter({
+    extensions: [
+        showdownKatex({
+            throwOnError: true,
+            errorColor: '#1500ff',
+            macros: {
+                href: "{}"
+            },
+            delimiters: [
+                {left: "$", right: "$", display: false},
+                {left: "\(", right: '\)', display: false},
+                {left: "$$", right: "$$", display: true},
+                {left: "\[", right: '\]', display: true},
+            ],
+        }),
+    ],
+});
 
 class Problem extends React.Component {
 
@@ -42,7 +62,7 @@ class Problem extends React.Component {
                 this.setState({
                     successfulSubmissions: res.data
                 })
-            })
+            });
     }
 
     init = () => {
@@ -59,10 +79,6 @@ class Problem extends React.Component {
         }
     };
 
-    componentDidUpdate(prevProps, prevState, snapshot) {
-        // window.MathJax.Hub.Queue(['Typeset', window.MathJax.Hub, document.getElementById('problem-body')])
-    }
-
     render() {
         this.init();
         return <div className="hero-body">
@@ -74,16 +90,19 @@ class Problem extends React.Component {
                     <div className="column is-three-fifths problem has-background-white has-text-dark">
                         <p className="has-text-dark">
                             <u className="title is-3 has-text-dark">{this.state.name}</u>
-                            &nbsp; (author :&nbsp;
+                            {this.state.author ? '  (author : ' : ''}
                             <a className="has-text-info"
                                href={"https://codechef.com/users/" + this.state.author}
                                target="_blank"
                                rel="noopener noreferrer">{this.state.author}
                             </a>
-                            )
+                            {this.state.author ? ')' : ''}
                         </p>
                         <br/>
-                        <div id="problem-body" dangerouslySetInnerHTML={{__html: this.state.body}}/>
+                        <div id="problem-body" dangerouslySetInnerHTML={{
+                            __html: converter.makeHtml(this.state.body)
+                        }}>
+                        </div>
                     </div>
                     <div className="column is-two-fifths" style={{"marginLeft": "20px"}}>
                         <Link className="button is-info is-rounded" style={{marginBottom: "20px"}}
@@ -102,6 +121,7 @@ class Problem extends React.Component {
                 </div>
             </div>
         </div>;
+
     }
 }
 
