@@ -13,6 +13,7 @@ use Firebase\JWT\JWT;
 class Auth
 {
     /**
+     * Verify the access token from JWT
      * @throws AuthException
      */
     public static function getAccessToken()
@@ -29,8 +30,9 @@ class Auth
     }
 
     /**
-     * get access token from header
-     * */
+     * Parse the Bearer token from Authorization header
+     * @return mixed|null
+     */
     private static function getBearerToken()
     {
         $headers = self::getAuthorizationHeader();
@@ -43,6 +45,10 @@ class Auth
         return null;
     }
 
+    /**
+     * Returns Authorization headers
+     * @return string|null
+     */
     private static function getAuthorizationHeader()
     {
         $headers = null;
@@ -63,6 +69,7 @@ class Auth
     }
 
     /**
+     * Returns the refresh token sent in query param
      * @param $params
      * @return mixed
      * @throws CustomException
@@ -77,6 +84,7 @@ class Auth
     }
 
     /**
+     * Create a JWT using the access token sent from CodeChef API
      * @param $access_token
      * @return string
      * @throws CustomException

@@ -12,6 +12,9 @@ class Database
     public $connection;
     private $DB_SERVER, $DB_USER, $DB_PASS, $DB_NAME;
 
+    /**
+     * Database constructor.
+     */
     public function __construct()
     {
         $this->DB_SERVER = getenv("DB_HOST");
@@ -22,6 +25,10 @@ class Database
         $this->loadMigrations();
     }
 
+    /**
+     * Connects to the database using PDO
+     * @return PDO
+     */
     private function connect()
     {
         $conn = new PDO("mysql:host=$this->DB_SERVER;dbname=$this->DB_NAME", $this->DB_USER, $this->DB_PASS);
@@ -29,11 +36,9 @@ class Database
         return $conn;
     }
 
-    public function getConnection()
-    {
-        return $this->connection;
-    }
-
+    /**
+     * Load initial migrations for creating tables
+     */
     public function loadMigrations()
     {
         $migrations = [
@@ -51,6 +56,15 @@ class Database
         }
         $this->connection->commit();
 
+    }
+
+    /**
+     * Returns the created PDO connection
+     * @return PDO
+     */
+    public function getConnection()
+    {
+        return $this->connection;
     }
 
 }

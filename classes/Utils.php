@@ -40,11 +40,12 @@ class Utils
     }
 
     /**
+     * Function to check if cache in DB should be updated
      * @param Carbon $dateTime
      * @return bool
      */
     public static function shouldUpdateCache($dateTime)
     {
-        return empty($dateTime) || (Carbon::parse($dateTime)->diffInHours(null) > CACHE_INTERVAL);
+        return empty($dateTime) || (Carbon::parse($dateTime)->diffInMinutes(null) > CACHE_INTERVAL);
     }
 }

@@ -25,7 +25,7 @@ define("CLIENT_SECRET", getenv("CODECHEF_CLIENT_SECRET"));
 define("API_URL", "https://api.codechef.com");
 define("REDIRECT_URI", "http://" . $_SERVER['HTTP_HOST'] . "/authorize");
 define("JWT_KEY", getenv("JWT_KEY"));
-define("CACHE_INTERVAL", 2);
+define("CACHE_INTERVAL", 60);
 
 session_start();
 $app = AppFactory::create();
@@ -151,14 +151,14 @@ $app->get('/problem', function (Request $request, Response $response) use ($repo
 $app->post('/ide/run', function (Request $request, Response $response) use ($repo) {
     $token = Auth::getAccessToken();
     $body = json_decode($request->getBody()->getContents(), true);
-    $response->getBody()->write($repo->makeSubmission($token, $body['code'], $body['input'], $body['lang']));
+    $response->getBody()->write($repo->runOnIDE($token, $body['code'], $body['input'], $body['lang']));
     return $response;
 });
 
 $app->get('/ide/status', function (Request $request, Response $response) use ($repo) {
     $token = Auth::getAccessToken();
     $params = $request->getQueryParams();
-    $response->getBody()->write($repo->getSubmissionDetails($token, $params['link']));
+    $response->getBody()->write($repo->getIDEStatus($token, $params['link']));
     return $response;
 });
 

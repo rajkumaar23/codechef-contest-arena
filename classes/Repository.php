@@ -8,7 +8,6 @@ namespace Classes;
 use Carbon\Carbon;
 use Exceptions\CustomException;
 use GuzzleHttp\Client;
-use GuzzleHttp\Middleware;
 use PDO;
 
 
@@ -34,6 +33,7 @@ class Repository
     }
 
     /**
+     * To retrieve list of all contests
      * @param $token
      * @return false|string
      */
@@ -66,6 +66,7 @@ class Repository
 
 
     /**
+     * To receive a particular non-parent contest's details along with its problemsList
      * @param $token
      * @param $contestCode
      * @return false|string
@@ -133,6 +134,12 @@ class Repository
         ]);
     }
 
+    /**
+     * Returns recent submissions for a contest
+     * @param $token
+     * @param $contestCode
+     * @return false|string
+     */
     public function getContestSubmissions($token, $contestCode)
     {
         $submissionStmt = $this->conn->prepare("SELECT * FROM submissions WHERE contestCode = ? ORDER BY date");
@@ -167,6 +174,12 @@ class Repository
         return json_encode($submissions);
     }
 
+    /**
+     * Returns the ranklist for a contest
+     * @param $token
+     * @param $contestCode
+     * @return false|string
+     */
     public function getContestRankings($token, $contestCode)
     {
         $rankingsStmt = $this->conn->prepare("SELECT * FROM rankings WHERE contestCode = ? ORDER BY rank");
@@ -198,6 +211,13 @@ class Repository
     }
 
 
+    /**
+     * Returns recent successful submissions for a problem
+     * @param $token
+     * @param $contestCode
+     * @param $problemCode
+     * @return false|string
+     */
     public function getProblemSubmissions($token, $contestCode, $problemCode)
     {
         $probSubmissionsStmt = $this->conn->prepare("SELECT * FROM problemSubmissions WHERE contestCode = ? AND problemCode = ? ORDER BY date DESC");
@@ -229,6 +249,13 @@ class Repository
         return json_encode($submissions);
     }
 
+    /**
+     * Returns major details of a problem
+     * @param $token
+     * @param $contestCode
+     * @param $problemCode
+     * @return false|string
+     */
     public function getProblemDetails($token, $contestCode, $problemCode)
     {
         $problemStmt = $this->conn->prepare("SELECT * FROM problemDetails WHERE contestCode = ? AND problemCode = ?");
@@ -256,17 +283,16 @@ class Repository
         return json_encode($problem);
     }
 
-    public function makeSubmission($token, $code, $input, $lang)
+    /**
+     * Runs the given code in IDE
+     * @param $token
+     * @param $code
+     * @param $input
+     * @param $lang
+     * @return false|string
+     */
+    public function runOnIDE($token, $code, $input, $lang)
     {
-        $clientHandler = $this->client->getConfig('handler');
-        // Create a middleware that echoes parts of the request.
-        $tapMiddleware = Middleware::tap(function ($request) {
-            echo $request->getHeaderLine('Content-Type');
-            // application/json
-            echo $request->getBody();
-            // {"foo":"bar"}
-        });
-
         $res = json_decode($this->client->request("post", "/ide/run", [
             'headers' => [
                 'Authorization' => 'Bearer ' . $token,
@@ -281,7 +307,13 @@ class Repository
         return json_encode($res);
     }
 
-    public function getSubmissionDetails($token, $link)
+    /**
+     * Returns the status/output of the submitted code from IDE
+     * @param $token
+     * @param $link
+     * @return false|string
+     */
+    public function getIDEStatus($token, $link)
     {
         $res = json_decode($this->client->get("/ide/status?link=" . $link, [
             'headers' => [
