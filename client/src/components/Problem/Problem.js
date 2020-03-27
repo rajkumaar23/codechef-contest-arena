@@ -7,6 +7,7 @@ import API from "../API";
 import DataTable from "react-data-table-component";
 import {Link} from "react-router-dom";
 import showdownKatex from "showdown-katex";
+import Utils from "../Utils";
 
 const showdown = require('showdown');
 const converter = new showdown.Converter({
@@ -48,6 +49,10 @@ class Problem extends React.Component {
     ];
 
     componentDidMount() {
+        Utils.Toast.fire({
+            icon: 'info',
+            title: 'Please wait while the data is being fetched'
+        });
         API.get('/problem?contestCode=' + this.props.match.params.code + '&problemCode=' + this.props.match.params.problemCode).then(res => {
             let data = res.data;
             this.setState({
@@ -61,7 +66,8 @@ class Problem extends React.Component {
             .then(res => {
                 this.setState({
                     successfulSubmissions: res.data
-                })
+                });
+                Utils.Toast.close();
             });
     }
 

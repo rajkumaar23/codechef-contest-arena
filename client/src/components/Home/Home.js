@@ -13,7 +13,7 @@ export class Home extends React.Component {
         loaded: false
     };
 
-    getSuggestions = (menuEl, searchText, mode) => {
+    getSuggestions = (menuEl, searchText, mode, size) => {
         let suggestions = this.state.contests.filter((el) => {
 
             return mode === 'code'
@@ -22,7 +22,7 @@ export class Home extends React.Component {
 
 
         });
-        suggestions = suggestions.slice(0, 5);
+        suggestions = suggestions.slice(0, size);
         return suggestions.map((el) => {
             let a = document.createElement('a');
             a.classList.add('dropdown-item');
@@ -39,11 +39,11 @@ export class Home extends React.Component {
         menuEl.innerHTML = null;
         if (this.state.contests.length > 0 && searchText.length > 0) {
             menuEl.innerHTML = '<div class="dropdown-content"></div>';
-            let suggestionsInCode = this.getSuggestions(menuEl, searchText, 'code');
+            let suggestionsInCode = this.getSuggestions(menuEl, searchText, 'code', 5);
             suggestionsInCode.forEach(item => {
                 menuEl.childNodes[0].appendChild(item)
             });
-            let suggestionsInName = this.getSuggestions(menuEl, searchText, 'name');
+            let suggestionsInName = this.getSuggestions(menuEl, searchText, 'name', 10 - suggestionsInCode.length);
             suggestionsInName.forEach(item => {
                 menuEl.childNodes[0].appendChild(item)
             });

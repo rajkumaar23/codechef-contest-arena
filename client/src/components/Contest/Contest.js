@@ -7,6 +7,8 @@ import API from "../API";
 import './Contest.css';
 import Swal from 'sweetalert2'
 import DataTable from "react-data-table-component";
+import {withRouter} from "react-router-dom";
+import Utils from "../Utils";
 
 class Contest extends React.Component {
 
@@ -110,6 +112,10 @@ class Contest extends React.Component {
     };
 
     getDetails = () => {
+        Utils.Toast.fire({
+            icon: 'info',
+            title: 'Please wait while the data is being fetched'
+        });
         API.get('/contests/' + this.props.match.params.code).then(res => {
             this.setState({
                 problems: res.data.problemsList,
@@ -117,16 +123,29 @@ class Contest extends React.Component {
                 endDate: res.data.contest.endDate,
             })
         }, err => {
-            Swal.fire('Oops...', err.response.data.error, 'error').then(() => {
-                window.location.href = "/contests";
-            });
-
-
+            try {
+                let html = '<p>This is a parent contest.<br/>Please choose one of its children below</p><br/>';
+                for (let it of JSON.parse(err.response.data.error).children) {
+                    html += `<a class="button is-info is-rounded" href=${'/contest/' + it}>${it}</a>&nbsp;`
+                }
+                Swal.fire({
+                    icon: 'info',
+                    html,
+                    showConfirmButton: false,
+                    allowEscapeKey: false,
+                    allowOutsideClick: false
+                })
+            } catch (e) {
+                Swal.fire('Oops', err.message, 'error').then(() => {
+                    this.props.history.push('/contests');
+                });
+            }
         });
         API.get('/submissions?contestCode=' + this.props.match.params.code).then(res => {
             this.setState({
                 submissions: res.data
             });
+            Utils.Toast.close();
         });
 
         API.get('/rankings?contestCode=' + this.props.match.params.code).then(res => {
@@ -246,4 +265,4 @@ class Contest extends React.Component {
     }
 }
 
-export default Contest;
+export default withRouter(Contest);

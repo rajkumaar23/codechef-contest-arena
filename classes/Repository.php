@@ -83,7 +83,7 @@ class Repository
         $problems = $problemsStmt->fetchAll(PDO::FETCH_OBJ);
 
         if (!empty($contest) && boolval($contest->isParent)) {
-            throw new CustomException("This is a parent contest. Please look for its children");
+            throw new CustomException(json_encode(['children' => json_decode($contest->children)]));
         }
 
         if (empty($contest) || empty($contest->banner) || empty($problems) || Utils::shouldUpdateCache($problems[0]->lastUpdated)) {
@@ -116,12 +116,12 @@ class Repository
                 $contestsWriteStmt = $this->conn->prepare("INSERT INTO contests(code,name,startDate,endDate,banner,lastUpdated) VALUES (?,?,?,?,?,?)");
                 $contestsWriteStmt->execute([$contestCode, $res->name, $res->startDate, $res->endDate, $res->banner, Carbon::now()]);
             } else if (empty($contest->banner)) {
-                $contestsUpdateStmt = $this->conn->prepare("UPDATE contests SET isParent = ?, banner = ? WHERE code = ?");
-                $contestsUpdateStmt->execute([intval($res->isParent), $res->bannerFile, $contestCode]);
+                $contestsUpdateStmt = $this->conn->prepare("UPDATE contests SET isParent = ?, children = ?, banner = ? WHERE code = ?");
+                $contestsUpdateStmt->execute([intval($res->isParent), json_encode($res->children), $res->bannerFile, $contestCode]);
             }
             $this->conn->commit();
             if (boolval($res->isParent)) {
-                throw new CustomException("This is a parent contest. Please look for its children");
+                throw new CustomException(json_encode(['children' => json_decode($res->children)]));
             }
             $contestsStmt->execute();
             $contest = $contestsStmt->fetch(PDO::FETCH_OBJ);
