@@ -49,7 +49,7 @@ class Repository
                 ]
             ])->getBody());
             $this->conn->beginTransaction();
-            if (Utils::shouldUpdateCache($result[0]->lastUpdated)) {
+            if (!empty($result) && Utils::shouldUpdateCache($result[0]->lastUpdated)) {
                 $deleteStmt = $this->conn->prepare("DELETE FROM contests");
                 $deleteStmt->execute();
             }

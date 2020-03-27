@@ -30,6 +30,9 @@ API.interceptors.response.use(undefined, err => {
                     localStorage.setItem(Utils.ACCESS_TOKEN, data.access_token);
                     localStorage.setItem(Utils.REFRESH_TOKEN, data.refresh_token);
                     subscribers = [];
+                }, () => {
+                    localStorage.clear();
+                    window.location.href = '/';
                 });
             }
             return new Promise(resolve => {

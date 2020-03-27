@@ -9,7 +9,8 @@ import API from "../API";
 
 export class Home extends React.Component {
     state = {
-        contests: []
+        contests: [],
+        loaded: false
     };
 
     getSuggestions = (menuEl, searchText, mode) => {
@@ -57,7 +58,8 @@ export class Home extends React.Component {
     componentDidMount() {
         API.get('/contests').then(res => {
             this.setState({
-                contests: res.data
+                contests: res.data,
+                loaded: true
             });
         });
     }
@@ -66,27 +68,42 @@ export class Home extends React.Component {
         if (!Utils.isLoggedIn()) {
             return <Redirect to='/'/>;
         }
-        return <div className="hero-body">
-            <div className="container has-text-centered">
-                <div className="column is-10 is-offset-1">
-                    <h1 className="title">
-                        Enter a Contest Code or Name
-                    </h1>
-                    <div className="is-active is-fullwidth">
-                        <div className="dropdown-trigger">
-                            <div className="field">
-                                <p className="control is-expanded has-icons-right">
-                                    <input className="input" type="search" placeholder="Search..."
-                                           onInput={this.handleInput}/>
-                                    <span className="icon is-small is-right"><i className="fas fa-search"/></span>
-                                </p>
+        if (this.state.loaded) {
+            return <div className="hero-body">
+                <div className="container has-text-centered">
+                    <div className="column is-10 is-offset-1">
+                        <h1 className="title">
+                            Enter a Contest Code or Name
+                        </h1>
+                        <div className="is-active is-fullwidth">
+                            <div className="dropdown-trigger">
+                                <div className="field">
+                                    <p className="control is-expanded has-icons-right">
+                                        <input className="input" type="search" placeholder="Search..."
+                                               onInput={this.handleInput}/>
+                                        <span className="icon is-small is-right"><i className="fas fa-search"/></span>
+                                    </p>
+                                </div>
                             </div>
+                            <div className="c-dropdown-menu is-centered" id="dropdown-menu" role="menu"/>
                         </div>
-                        <div className="c-dropdown-menu is-centered" id="dropdown-menu" role="menu"/>
                     </div>
                 </div>
-            </div>
-        </div>;
+            </div>;
+        } else {
+            return <div className="hero-body">
+                <div className="container has-text-centered">
+                    <div className="column is-10 is-offset-1">
+                        <h1 className="title">
+                            Please wait while the contests load up 🙈
+                        </h1>
+                        <div className="is-active is-fullwidth">
+                            <progress className="progress is-info" max="100"/>
+                        </div>
+                    </div>
+                </div>
+            </div>;
+        }
     }
 }
 
