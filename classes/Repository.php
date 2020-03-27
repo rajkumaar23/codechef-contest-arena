@@ -82,10 +82,6 @@ class Repository
         $problemsStmt->execute();
         $problems = $problemsStmt->fetchAll(PDO::FETCH_OBJ);
 
-        if (!empty($contest) && boolval($contest->isParent)) {
-            throw new CustomException(json_encode(['children' => json_decode($contest->children)]));
-        }
-
         if (empty($contest) || empty($contest->banner) || empty($problems) || Utils::shouldUpdateCache($problems[0]->lastUpdated)) {
             $res = json_decode($this->client->get("/contests/$contestCode", [
                 'headers' => [
@@ -120,13 +116,13 @@ class Repository
                 $contestsUpdateStmt->execute([intval($res->isParent), json_encode($res->children), $res->bannerFile, $contestCode]);
             }
             $this->conn->commit();
-            if (boolval($res->isParent)) {
-                throw new CustomException(json_encode(['children' => json_decode($res->children)]));
-            }
             $contestsStmt->execute();
             $contest = $contestsStmt->fetch(PDO::FETCH_OBJ);
             $problemsStmt->execute();
             $problems = $problemsStmt->fetchAll(PDO::FETCH_OBJ);
+        }
+        if (!empty($contest) && boolval($contest->isParent)) {
+            throw new CustomException(json_encode(['children' => json_decode($contest->children)]));
         }
         return json_encode([
             'contest' => $contest,
