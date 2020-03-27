@@ -1,0 +1,19 @@
+/*
+ * Copyright (c) 2020. RAJKUMAR
+ */
+
+h3 {
+    font-size: 18px !important;
+    font-weight: bold !important;
+    margin: 5px 0 5px 5px;
+}
+
+p {
+    margin: 5px 5px 10px 0 !important;
+    padding: 5px 5px 5px 5px !important;
+}
+
+ul {
+    list-style: initial !important;
+    margin: 10px 10px 10px 30px;
+}

@@ -7,10 +7,12 @@ import API from "../API";
 import DataTable from "react-data-table-component";
 import {Link} from "react-router-dom";
 import showdownKatex from "showdown-katex";
+import './Problem.css';
 import Utils from "../Utils";
 
 const showdown = require('showdown');
 const converter = new showdown.Converter({
+
     extensions: [
         showdownKatex({
             throwOnError: true,
@@ -19,11 +21,8 @@ const converter = new showdown.Converter({
                 href: "{}"
             },
             delimiters: [
-                {left: "$", right: "$", display: false},
-                {left: "\\(", right: '\\)', display: false},
-                {left: "$$", right: "$$", display: true},
-                {left: "\\[", right: '\\]', display: true},
-            ],
+                {left: '$', right: '$', display: false}
+            ]
         }),
     ],
 });
@@ -55,8 +54,12 @@ class Problem extends React.Component {
         });
         API.get('/problem?contestCode=' + this.props.match.params.code + '&problemCode=' + this.props.match.params.problemCode).then(res => {
             let data = res.data;
+            let temp = data.body.replace(/<br \/>/g, "\n");
+            // temp = temp.replace(/\$/g, '$$$$');
+            console.log(temp);
+            temp = converter.makeHtml(temp);
             this.setState({
-                body: data.body,
+                body: temp,
                 name: data.name,
                 author: data.author
             });
@@ -89,12 +92,12 @@ class Problem extends React.Component {
         this.init();
         return <div className="hero-body">
             <div className="container">
-                <p className="subtitle is-5 has-text-light"><Link
+                <h6 className="subtitle is-5 has-text-light"><Link
                     to={'/contest/' + this.props.match.params.code}>&#x25c0; {this.props.match.params.code}</Link>
-                </p>
+                </h6>
                 <div className="columns">
                     <div className="column is-three-fifths problem has-background-white has-text-dark">
-                        <p className="has-text-dark">
+                        <div className="has-text-dark">
                             <u className="title is-3 has-text-dark">{this.state.name}</u>
                             {this.state.author ? '  (author : ' : ''}
                             <a className="has-text-info"
@@ -103,11 +106,9 @@ class Problem extends React.Component {
                                rel="noopener noreferrer">{this.state.author}
                             </a>
                             {this.state.author ? ')' : ''}
-                        </p>
+                        </div>
                         <br/>
-                        <div id="problem-body" dangerouslySetInnerHTML={{
-                            __html: converter.makeHtml(this.state.body)
-                        }}>
+                        <div id="problem-body" dangerouslySetInnerHTML={{__html: this.state.body}}>
                         </div>
                     </div>
                     <div className="column is-two-fifths" style={{"marginLeft": "20px"}}>
