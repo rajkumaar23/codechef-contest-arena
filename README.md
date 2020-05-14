@@ -1,5 +1,7 @@
 # CodeChef Contest Arena
 
+> Disclaimer : The CodeChef APIs are not public yet.
+
 ## Setting up development environment
 - Clone this repository
 - Get `composer` and `yarn` installed on your system
@@ -10,3 +12,6 @@
 - Next, get inside `client/` directory and run `yarn install`
 - And, run `yarn serve` to start the web app
 - Wait until React automatically opens the browser for you :)
+
+## Preview Video
+[<img src="https://img.youtube.com/vi/197v5LXos6A/maxresdefault.jpg">](https://youtu.be/197v5LXos6A)
