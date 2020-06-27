@@ -27,6 +27,36 @@ const converter = new showdown.Converter({
     ],
 });
 
+const _EscapeMathJax = (str) => {
+    if (str) {
+        return str.replace(/([-\\`*_{}[\]()#+.!])/g, '\\$1');
+    }
+};
+const isMarkdownString = (str) => {
+    const isHtml = /<b>(.*?)<\/b>/.test(str)
+        || /<p>(.*?)<\/p>/.test(str)
+        || /<ul>(.*?)<\/ul>/.test(str)
+        || /<li>(.*?)<\/li>/.test(str)
+        || /<br>(.*?)/.test(str)
+        || /(.*?)<\/br>/.test(str);
+
+    return !isHtml;
+};
+
+const getProcessedMarkdown = (text) => {
+    // If the statement is not in markdown, do nothing.
+    if (!text || !isMarkdownString(text)) {
+        return text;
+    }
+
+    // MathJax support: Escape Markdown special characters
+    text = text.replace(/~/g, '~T');
+    text = text.replace(/\$\$([^]*?)\$\$/g, _EscapeMathJax);
+    text = text.replace(/\$([^]*?)\$/g, _EscapeMathJax);
+
+    return text;
+};
+
 class Problem extends React.Component {
 
     recents = [];
@@ -57,7 +87,7 @@ class Problem extends React.Component {
             let temp = data.body.replace(/<br \/>/g, "\n");
             // temp = temp.replace(/\$/g, '$$$$');
             console.log(temp);
-            temp = converter.makeHtml(temp);
+            temp = converter.makeHtml(getProcessedMarkdown(temp));
             this.setState({
                 body: temp,
                 name: data.name,
