@@ -25,29 +25,15 @@
     <link href="%PUBLIC_URL%/logo192.png" rel="apple-touch-icon" />
     <link href="%PUBLIC_URL%/manifest.json" rel="manifest" />
     <title>CodeChef Contest Arena</title>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-125197278-3"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
 
-    <!-- Matomo -->
-    <script type="text/javascript">
-      var _paq = window._paq || [];
-      /* tracker methods like "setCustomDimension" should be called before "trackPageView" */
-      _paq.push(["setCookieDomain", "*.codechef-arena.netlify.app"]);
-      _paq.push(["trackPageView"]);
-      _paq.push(["enableLinkTracking"]);
-      (function () {
-        var u = "//matomo.rajkumaar.co.in/";
-        _paq.push(["setTrackerUrl", u + "matomo.php"]);
-        _paq.push(["setSiteId", "2"]);
-        var d = document,
-          g = d.createElement("script"),
-          s = d.getElementsByTagName("script")[0];
-        g.type = "text/javascript";
-        g.async = true;
-        g.defer = true;
-        g.src = u + "matomo.js";
-        s.parentNode.insertBefore(g, s);
-      })();
+      gtag('config', 'UA-125197278-3');
     </script>
-    <!-- End Matomo Code -->
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
