@@ -8,6 +8,6 @@
     "ext-mysqli": "*",
     "ext-pdo": "*",
     "nesbot/carbon": "^2.31",
-    "firebase/php-jwt": "^5.1"
+    "firebase/php-jwt": "^6.0"
   }
 }
