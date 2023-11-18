@@ -20,10 +20,13 @@ require 'vendor/autoload.php';
 require 'classes/autoload.php';
 require 'exceptions/CustomExceptions.php';
 
+$dotenv = Dotenv\Dotenv::createUnsafeImmutable(__DIR__);
+$dotenv->load();
+
 define("CLIENT_ID", getenv("CODECHEF_CLIENT_ID"));
 define("CLIENT_SECRET", getenv("CODECHEF_CLIENT_SECRET"));
 define("API_URL", "https://api.codechef.com");
-define("REDIRECT_URI", "http://" . $_SERVER['HTTP_HOST'] . "/authorize");
+define("REDIRECT_URI", "https://" . $_SERVER['HTTP_HOST'] . "/authorize");
 define("JWT_KEY", getenv("JWT_KEY"));
 define("CACHE_INTERVAL", 60);
 
