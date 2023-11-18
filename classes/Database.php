@@ -54,7 +54,8 @@ class Database
         foreach ($migrations as $migration) {
             $this->connection->exec($migration);
         }
-        $this->connection->commit();
+        if ($this->connection->inTransaction())
+            $this->connection->commit();
 
     }
 

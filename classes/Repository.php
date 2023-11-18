@@ -57,7 +57,8 @@ class Repository
             foreach ($res->result->data->content->contestList as $item) {
                 $insertStmt->execute([$item->code, $item->name, $item->startDate, $item->endDate, Carbon::now()]);
             }
-            $this->conn->commit();
+            if ($this->conn->inTransaction())
+                $this->conn->commit();
             $readStmt->execute();
             $result = $readStmt->fetchAll(PDO::FETCH_OBJ);
         }
@@ -115,7 +116,8 @@ class Repository
                 $contestsUpdateStmt = $this->conn->prepare("UPDATE contests SET isParent = ?, children = ?, banner = ? WHERE code = ?");
                 $contestsUpdateStmt->execute([intval($res->isParent), json_encode($res->children), $res->bannerFile, $contestCode]);
             }
-            $this->conn->commit();
+            if ($this->conn->inTransaction())
+                $this->conn->commit();
             $contestsStmt->execute();
             $contest = $contestsStmt->fetch(PDO::FETCH_OBJ);
             $problemsStmt->execute();
@@ -163,7 +165,8 @@ class Repository
                     $item->id, $item->date, $item->contestCode, $item->problemCode, $item->memory, $item->time, $item->result, $item->username, $item->language, Carbon::now()
                 ]);
             }
-            $this->conn->commit();
+            if ($this->conn->inTransaction())
+                $this->conn->commit();
             $submissionStmt->execute([$contestCode]);
             $submissions = $submissionStmt->fetchAll(PDO::FETCH_OBJ);
         }
@@ -199,7 +202,8 @@ class Repository
                     $contestCode, $item->rank, $item->username, $item->totalScore, $item->institution, $item->countryCode, Carbon::now()
                 ]);
             }
-            $this->conn->commit();
+            if ($this->conn->inTransaction())
+                $this->conn->commit();
             $rankingsStmt->execute([$contestCode]);
             $rankings = $rankingsStmt->fetchAll(PDO::FETCH_OBJ);
         }
@@ -238,7 +242,8 @@ class Repository
                     $item->username, $item->time, $item->memory, $item->language, $problemCode, $contestCode, $item->date, Carbon::now()
                 ]);
             }
-            $this->conn->commit();
+            if ($this->conn->inTransaction())
+                $this->conn->commit();
             $probSubmissionsStmt->execute([$contestCode, $problemCode]);
             $submissions = $probSubmissionsStmt->fetchAll(PDO::FETCH_OBJ);
         }
@@ -272,7 +277,8 @@ class Repository
             $problemsWriteStmt = $this->conn
                 ->prepare("INSERT INTO problemDetails(problemCode,contestCode,body,name,author,lastUpdated) VALUES (?,?,?,?,?,?)");
             $problemsWriteStmt->execute([$problemCode, $contestCode, $item->body, $item->problemName, $item->author, Carbon::now()]);
-            $this->conn->commit();
+            if ($this->conn->inTransaction())
+                $this->conn->commit();
             $problemStmt->execute([$contestCode, $problemCode]);
             $problem = $problemStmt->fetch(PDO::FETCH_OBJ);
         }
