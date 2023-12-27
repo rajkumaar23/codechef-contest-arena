@@ -101,8 +101,9 @@ $app->get('/refresh', function (Request $request, Response $response) {
     return $response->withAddedHeader('Content-Type', 'application/json');
 });
 
-$app->get('/me', function (Request $request, Response $response) {
-
+$app->get('/healthcheck', function (Request $request, Response $response) {
+    $response->getBody()->write(json_encode(['status' => 'ok']));
+    return $response->withAddedHeader('Content-Type', 'application/json');
 });
 
 $app->get('/contests[/{code}]', function (Request $request, Response $response, $args) use ($repo) {
